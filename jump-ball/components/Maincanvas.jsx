@@ -5,9 +5,6 @@ import BallImg from '../public/ball.png'
 export default function Maincanvas() {
 
     const container = useRef();
-    /*
-
-    let ball = CanvasBall.getInstance(app, canvasDiv);*/
 
     useEffect(() => {
         let isUnmounted = false;
@@ -15,11 +12,13 @@ export default function Maincanvas() {
         (
             async () => {
                 const {default: CanvasBall} = await import("../controllers/ball/CanvasBall");
+
                 if (isUnmounted) return;
                 let ball = CanvasBall.instance;
                 container.current.appendChild(ball.app.view);
                 ball.paintFrame();
                 ball.paintBall(BallImg.src);
+                ball.jumpBall();
             }
         )();
 

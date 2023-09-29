@@ -16,14 +16,6 @@ export default class CanvasBall {
         this.app = new PIXI.Application({width: 808, height: 808});
         this.frame = new PIXI.Graphics();
         this.ball;
-
-        // ball.paintCanvas();
-        //
-        // let frame = new PIXI.Graphics();
-        // ball.paintFrame(frame);
-        //
-        // let ballSprite = PIXI.Sprite.from(BallImg.src);
-        // ball.paintBall(ballSprite);
     }
 
 
@@ -48,5 +40,14 @@ export default class CanvasBall {
             this.frame.cursor = 'pointer';
             this.frame.addChild(this.ball);
         }
+    }
+
+    jumpBall(){
+        this.frame.on('mousedown', ()=>{
+            gsap.to(this.ball, { duration: 2.5, ease: "circ", x: this.ball.x+50,y:this.ball.y-100});
+            setTimeout(()=>{
+                gsap.to(this.ball, { duration: 2.5, ease: "bounce.out", y:750});
+            },500)
+        });
     }
 }
