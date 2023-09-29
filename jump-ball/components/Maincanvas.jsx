@@ -13,6 +13,13 @@ export default function Maincanvas() {
       this.ball;
     }
 
+    static getInstance(app, ref) {
+      if (!this.instance) {
+        this.instance = new CanvasBall(app, ref);
+      }
+      return this.instance;
+    }
+
     paintCanvas() {
       this.ref.current.appendChild(this.app.view);
     }
@@ -41,10 +48,10 @@ export default function Maincanvas() {
       }
     }
   }
-  
+
   const app = new PIXI.Application({ width: 808, height: 808 });
   const canvasDiv = useRef();
-  let ball = new CanvasBall(app, canvasDiv);
+  let ball = CanvasBall.getInstance(app, canvasDiv);
 
   useEffect(() => {
     ball.paintCanvas();
