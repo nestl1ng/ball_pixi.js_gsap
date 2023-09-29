@@ -14,7 +14,7 @@ export default class CanvasBall {
 
     constructor() {
         this.app = new PIXI.Application({width: 808, height: 808});
-        this.frame;
+        this.frame = new PIXI.Graphics();
         this.ball;
 
         // ball.paintCanvas();
@@ -27,9 +27,8 @@ export default class CanvasBall {
     }
 
 
-    paintFrame(frame) {
+    paintFrame() {
         if (typeof this.app !== 'undefined') {
-            this.frame = frame;
             this.frame.beginFill(0x666666);
             this.frame.drawRect(0, 0, 800, 800);
             this.frame.position.set(4, 4);
@@ -39,7 +38,7 @@ export default class CanvasBall {
 
     paintBall(ball) {
         if (typeof this.frame !== 'undefined') {
-            this.ball = ball;
+            this.ball = PIXI.Sprite.from(ball);
             this.ball.width = 50;
             this.ball.height = 50;
             this.ball.x = 0;

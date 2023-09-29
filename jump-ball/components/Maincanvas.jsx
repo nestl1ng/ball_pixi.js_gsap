@@ -1,5 +1,6 @@
 'use client'
 import {useRef, useEffect} from 'react';
+import BallImg from '../public/ball.png'
 
 export default function Maincanvas() {
 
@@ -15,7 +16,10 @@ export default function Maincanvas() {
             async () => {
                 const {default: CanvasBall} = await import("../controllers/ball/CanvasBall");
                 if (isUnmounted) return;
-                container.current.appendChild(CanvasBall.instance.app.view);
+                let ball = CanvasBall.instance;
+                container.current.appendChild(ball.app.view);
+                ball.paintFrame();
+                ball.paintBall(BallImg.src);
             }
         )();
 
