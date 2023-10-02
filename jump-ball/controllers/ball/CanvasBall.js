@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { gsap } from "gsap/dist/gsap";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 export default class CanvasBall {
   static get instance() {
@@ -42,30 +43,29 @@ export default class CanvasBall {
 
   jumpBall() {
     var tl = gsap.timeline();
+    gsap.registerPlugin(MotionPathPlugin);
     this.frame.on("mousedown", () => {
       tl.to(this.ball, {
+        motionPath: {
+          path: [
+            { x: this.ball.x + 50, y: this.ball.y - 50 },
+            { x: this.ball.x + 75, y: this.ball.y - 60 },
+            { x: this.ball.x + 125, y: this.ball.y - 60 },
+            { x: this.ball.x + 150, y: this.ball.y - 50 },
+          ],
+        },
         duration: 1.5,
-        ease: "circ",
-        x: "+=100",
-        y: "-=100",
-      }).to(
+        ease: "power3.out",
+      })
+      .to(
         this.ball,
         {
-          duration: 1,
+          duration: 1.2,
           ease: "bounce.out",
           y: 750,
         },
-        "-=1"
+        "-=1.2"
       );
-      //   gsap.to(this.ball, {
-      //     duration: 2.5,
-      //     ease: "circ",
-      //     x: this.ball.x + 50,
-      //     y: this.ball.y - 100,
-      //   });
-      //   setTimeout(() => {
-      //     gsap.to(this.ball, { duration: 2.5, ease: "bounce.out", y: 750 });
-      //   }, 500);
     });
   }
 }
