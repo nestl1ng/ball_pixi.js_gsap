@@ -57,14 +57,13 @@ export default class CanvasBall {
     this.tl
       .to(this.ball, {
         motionPath: [
-          { x: this.stepX + 50, y: this.stepY - 50 },
-          { x: this.stepX + 75, y: this.stepY - 60 },
-          { x: this.stepX + 125, y: this.stepY - 60 },
-          { x: this.stepX + 150, y: this.stepY - 50 },
+          { x: this.stepX + 50, y: this.stepY - 50, rotation: 1 },
+          { x: this.stepX + 75, y: this.stepY - 60, rotation: 1.5 },
+          { x: this.stepX + 125, y: this.stepY - 60, rotation: 2 },
+          { x: this.stepX + 150, y: this.stepY - 50, rotation: 3.5 },
         ],
         duration: 1.5,
         ease: "power3.out",
-        rotation: "+=7",
       })
       .to(
         this.ball,
