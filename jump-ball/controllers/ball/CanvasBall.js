@@ -15,7 +15,12 @@ export default class CanvasBall {
   constructor() {
     this.app = new PIXI.Application({ width: 808, height: 808 });
     this.frame = new PIXI.Graphics();
+
+    this.stepX = 0;
+    this.stepY = 775;
     this.ball;
+    this.tl = gsap.timeline();
+    gsap.registerPlugin(MotionPathPlugin);
   }
 
   paintFrame() {
@@ -32,8 +37,9 @@ export default class CanvasBall {
       this.ball = PIXI.Sprite.from(ball);
       this.ball.width = 50;
       this.ball.height = 50;
-      this.ball.x = 0;
-      this.ball.y = 750;
+      this.ball.x = 25;
+      this.ball.y = 775;
+      this.ball.anchor.set(0.5);
 
       this.frame.eventMode = "static";
       this.frame.cursor = "pointer";
@@ -42,30 +48,33 @@ export default class CanvasBall {
   }
 
   jumpBall() {
-    var tl = gsap.timeline();
-    gsap.registerPlugin(MotionPathPlugin);
     this.frame.on("mousedown", () => {
-      tl.to(this.ball, {
-        motionPath: {
-          path: [
-            { x: this.ball.x + 50, y: this.ball.y - 50 },
-            { x: this.ball.x + 75, y: this.ball.y - 60 },
-            { x: this.ball.x + 125, y: this.ball.y - 60 },
-            { x: this.ball.x + 150, y: this.ball.y - 50 },
-          ],
-        },
+      this.lineupBall();
+    });
+  }
+
+  lineupBall() {
+    this.tl
+      .to(this.ball, {
+        motionPath: [
+          { x: this.stepX + 50, y: this.stepY - 50 },
+          { x: this.stepX + 75, y: this.stepY - 60 },
+          { x: this.stepX + 125, y: this.stepY - 60 },
+          { x: this.stepX + 150, y: this.stepY - 50 },
+        ],
         duration: 1.5,
         ease: "power3.out",
+        rotation: "+=7",
       })
       .to(
         this.ball,
         {
           duration: 1.2,
           ease: "bounce.out",
-          y: 750,
+          y: 775,
         },
         "-=1.2"
       );
-    });
+    this.stepX += 150;
   }
 }

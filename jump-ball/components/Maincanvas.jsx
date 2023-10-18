@@ -1,4 +1,5 @@
 'use client'
+import { Assets } from 'pixi.js';
 import { useRef, useEffect } from 'react';
 
 export default function Maincanvas() {
@@ -14,8 +15,8 @@ export default function Maincanvas() {
                 let ball = CanvasBall.instance;
                 container.current.appendChild(ball.app.view);
                 ball.paintFrame();
-                const { default: ballImg } = await import("../public/ball.png");
-                ball.paintBall(ballImg.src);
+                const ballImg = await Assets.load("/ball.png");
+                ball.paintBall(ballImg);
                 ball.jumpBall();
             }
         )();
@@ -26,7 +27,7 @@ export default function Maincanvas() {
     }, [])
 
     return (
-        <div className='canvas' ref={container}>
+        <div className='soccer-ball' ref={container}>
         </div>
     )
 }
