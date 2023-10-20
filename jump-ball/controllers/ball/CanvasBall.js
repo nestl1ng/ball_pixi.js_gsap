@@ -39,6 +39,8 @@ export default class CanvasBall {
       this.ball.height = 50;
       this.ball.x = 25;
       this.ball.y = 775;
+      //  this.ball.position.y = 780;
+      //  this.ball.scale.y = 0.015;
       this.ball.anchor.set(0.5);
 
       this.frame.eventMode = "static";
@@ -60,11 +62,9 @@ export default class CanvasBall {
           { x: this.stepX + 50, y: this.stepY - 50 },
           { x: this.stepX + 75, y: this.stepY - 60 },
           { x: this.stepX + 125, y: this.stepY - 60 },
-          { x: this.stepX + 150, y: this.stepY - 50 },
         ],
         duration: 1.5,
         ease: "power3.out",
-        rotation: "+=5",
       })
       .to(
         this.ball,
@@ -75,15 +75,40 @@ export default class CanvasBall {
         },
         "-=1.2"
       ).to(
+        this.ball.scale,
+        {
+          duration: 0.1,
+          x: 0.015,
+        },
+        ">-0.8"
+      )
+      .to(
+        this.ball.position,
+        {
+          duration: 0.1,
+          y: 785,
+        },
+        "<"
+      )
+      .to(
+        this.ball.scale,
+        {
+          duration: 0.1,
+          x: 0.022,
+        },
+        "<+0.1"
+      )
+      .to(
         this.ball,
         {
-          duration: 1.2,
+          duration: 1.5,
           ease: "power1.out",
-          x: this.stepX + 180,
-          rotation: "+=4",
+          x: this.stepX + 200,
+          rotation: "+=6.28319",
         },
-        "-=1.2"
+        "-=1.5"
       );
-    this.stepX += 180;
+
+    this.stepX += 200;
   }
 }
