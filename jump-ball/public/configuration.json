@@ -1,0 +1,7 @@
+{
+  "assets": {
+    "ballPng": "/ball.png"
+  },
+  "jumpHeight": 50,
+  "animationDuration": 1.5
+}

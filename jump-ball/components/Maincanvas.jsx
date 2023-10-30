@@ -1,10 +1,13 @@
 'use client'
-import { Assets } from 'pixi.js';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+//import { loadingAssets,loadingManifest } from './features/gameSlice'
 
 export default function Maincanvas() {
-
     const container = useRef();
+    //const imgBall = useSelector(state => state.initGame.image);
+    //const configuration = useSelector(state => state.initGame.configuration);
+    //const dispatch = useDispatch();
 
     useEffect(() => {
         let isUnmounted = false;
@@ -15,9 +18,7 @@ export default function Maincanvas() {
                 let ball = CanvasBall.instance;
                 container.current.appendChild(ball.app.view);
                 ball.paintFrame();
-                const ballImg = await Assets.load("/ball.png");
-                ball.paintBall(ballImg);
-                ball.jumpBall();
+                ball.initConfigur();
             }
         )();
 

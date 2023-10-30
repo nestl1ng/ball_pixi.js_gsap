@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { gsap } from "gsap/dist/gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import axios from 'axios'
 
 export default class CanvasBall {
   static get instance() {
@@ -15,10 +16,10 @@ export default class CanvasBall {
   constructor() {
     this.app = new PIXI.Application({ width: 808, height: 808 });
     this.frame = new PIXI.Graphics();
-
     this.stepX = 0;
     this.stepY = 775;
     this.ball;
+    this.allData;
     this.tl = gsap.timeline();
     gsap.registerPlugin(MotionPathPlugin);
   }
@@ -32,9 +33,17 @@ export default class CanvasBall {
     }
   }
 
-  paintBall(ball) {
+  async initConfigur(){
+      const response = await axios.get('/configuration.json');
+      this.allData = response.data
+      this.paintBall();
+  }
+
+
+  async paintBall() {
     if (typeof this.frame !== "undefined") {
-      this.ball = PIXI.Sprite.from(ball);
+      this.ball = await PIXI.Assets.load(this.allData.assets.ballPng);
+      this.ball = PIXI.Sprite.from(this.ball);
       this.ball.width = 50;
       this.ball.height = 50;
       this.ball.x = 25;
@@ -42,10 +51,10 @@ export default class CanvasBall {
       //  this.ball.position.y = 780;
       //  this.ball.scale.y = 0.015;
       this.ball.anchor.set(0.5);
-
       this.frame.eventMode = "static";
       this.frame.cursor = "pointer";
       this.frame.addChild(this.ball);
+      this.jumpBall();
     }
   }
 
@@ -59,33 +68,33 @@ export default class CanvasBall {
     this.tl
       .to(this.ball, {
         motionPath: [
-          { x: this.stepX + 50, y: this.stepY - 50 },
-          { x: this.stepX + 75, y: this.stepY - 60 },
-          { x: this.stepX + 125, y: this.stepY - 60 },
+          { x: this.stepX + 50, y: this.stepY - this.allData.jumpHeight },
+          { x: this.stepX + 75, y: this.stepY - this.allData.jumpHeight*1.2 },
+          { x: this.stepX + 125, y: this.stepY - this.allData.jumpHeight*1.2 },
         ],
-        duration: 1.5,
+        duration: this.allData.animationDuration,
         ease: "power3.out",
       })
       .to(
         this.ball,
         {
-          duration: 1.2,
+          duration: this.allData.animationDuration*0.8,
           ease: "bounce.out",
           y: 775,
         },
-        "-=1.2"
+        `-=${this.allData.animationDuration*0.8}`
       ).to(
         this.ball.scale,
         {
-          duration: 0.1,
+          duration: this.allData.animationDuration*0.066,
           x: 0.015,
         },
-        ">-0.8"
+        `>-${this.allData.animationDuration*0.533}`
       )
       .to(
         this.ball.position,
         {
-          duration: 0.1,
+          duration: this.allData.animationDuration*0.066,
           y: 785,
         },
         "<"
@@ -93,20 +102,20 @@ export default class CanvasBall {
       .to(
         this.ball.scale,
         {
-          duration: 0.1,
+          duration: this.allData.animationDuration*0.066,
           x: 0.022,
         },
-        "<+0.1"
+        `<+${this.allData.animationDuration*0.066}`
       )
       .to(
         this.ball,
         {
-          duration: 1.5,
+          duration: this.allData.animationDuration,
           ease: "power1.out",
           x: this.stepX + 200,
           rotation: "+=6.28319",
         },
-        "-=1.5"
+        `-=${this.allData.animationDuration}`
       );
 
     this.stepX += 200;
