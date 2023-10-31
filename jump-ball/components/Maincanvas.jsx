@@ -16,7 +16,6 @@ export default function Maincanvas() {
       if (isUnmounted) return;
       let ball = CanvasBall.instance;
       setCanvasBall(ball);
-      container.current.appendChild(ball.app.view);
     })();
 
     return () => {
@@ -30,6 +29,9 @@ export default function Maincanvas() {
       await canvasBall[`${state}Action`]?.();
       dispatch(nextStep());
     })();
+    if(state==='initialization'){
+        container.current.appendChild(canvasBall.app.view);
+    }
   }, [state, canvasBall]);
 
   return <div className="soccer-ball" ref={container}></div>;

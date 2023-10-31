@@ -14,8 +14,8 @@ export default class CanvasBall {
   static _instance = null;
 
   constructor() {
-    this.app = new PIXI.Application({ width: 1008, height: 808 });
-    this.frame = new PIXI.Graphics();
+    this.app;
+    this.frame;
     this.stepX = 0;
     this.stepY = 775;
     this.ball;
@@ -35,15 +35,17 @@ export default class CanvasBall {
   }
 
   initializationAction() {
+    this.app = new PIXI.Application({ width: 1008, height: 808 });
+    this.frame = new PIXI.Graphics();
+  }
+
+  initLevelAction() {
     this.frame.beginFill(0x666666);
     this.frame.drawRect(0, 0, 1000, 800);
     this.frame.position.set(4, 4);
     this.frame.eventMode = "static";
     this.frame.cursor = "pointer";
     this.app.stage.addChild(this.frame);
-  }
-
-  initLevelAction() {
     this.ball.width = 50;
     this.ball.height = 50;
     this.ball.x = 25;
