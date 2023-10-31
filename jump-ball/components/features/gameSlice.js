@@ -1,13 +1,45 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  createEntityAdapter,
+} from "@reduxjs/toolkit";
+
+const states = {
+  loadingManifest: {
+    avaliableStates: ["loadingAssets"],
+    nextState: "loadingAssets",
+  },
+  loadingAssets: {
+    avaliableStates: ["initialization"],
+    nextState: "initialization",
+  },
+  initialization: {
+    avaliableStates: ["initLevel"],
+    nextState: "initLevel",
+  },
+  initLevel: {
+    avaliableStates: ["playing"],
+    nextState: "playing",
+  },
+  playing: {
+    avaliableStates: null,
+    nextState: null,
+  },
+};
 
 export const gameSlice = createSlice({
   name: "initGame",
   initialState: {
-    configuration: {},
+    gameState: "loadingManifest",
   },
-  reducers: {},
+  reducers: {
+    nextStep(state) {
+      if (!states[state.gameState].nextState) return;
+      state.gameState = states[state.gameState].nextState;
+    },
+  },
 });
 
-//export const { loadingAssets, loadingManifest } = gameSlice.actions;
+export const { nextStep } = gameSlice.actions;
 
 export default gameSlice.reducer;
