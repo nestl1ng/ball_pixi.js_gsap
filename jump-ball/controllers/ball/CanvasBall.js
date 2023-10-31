@@ -45,7 +45,6 @@ export default class CanvasBall {
     this.frame.position.set(4, 4);
     this.frame.eventMode = "static";
     this.frame.cursor = "pointer";
-    this.app.stage.addChild(this.frame);
     this.ball.width = 50;
     this.ball.height = 50;
     this.ball.x = 25;
@@ -53,6 +52,7 @@ export default class CanvasBall {
     //  this.ball.position.y = 780;
     //  this.ball.scale.y = 0.015;
     this.ball.anchor.set(0.5);
+    this.app.stage.addChild(this.frame);
     this.frame.addChild(this.ball);
   }
 
