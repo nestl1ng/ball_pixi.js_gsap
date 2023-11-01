@@ -1,8 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  createEntityAdapter,
-} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const states = {
   loadingManifest: {

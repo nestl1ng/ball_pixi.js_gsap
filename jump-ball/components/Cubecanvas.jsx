@@ -7,25 +7,27 @@ export default function Maincanvas() {
   const container = useRef();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.initGame.gameState);
-  const [canvasBall, setCanvasBall] = useState(null);
+  const [threeCube, setThreeCube] = useState(null);
 
   const stateObj = useMemo(() => {
     return {
-    initialization() {
-        container.current.appendChild(canvasBall.app.view);
-      }
-  }
-  }, [canvasBall]);
+      initialization() {
+        let renderer = threeCube.webGLRenderer();
+        container.current.appendChild(renderer.domElement);
+      },
+    };
+  }, [threeCube]);
 
   useEffect(() => {
     let isUnmounted = false;
     (async () => {
-      const { default: CanvasBall } = await import(
-        "../controllers/ball/CanvasBall"
+      const { default: ThreeCube } = await import(
+        "../controllers/cube/ThreeCube"
       );
+
       if (isUnmounted) return;
-      let ball = CanvasBall.instance;
-      setCanvasBall(ball);
+      let cube = ThreeCube.instance;
+      setThreeCube(cube);
     })();
 
     return () => {
@@ -34,10 +36,10 @@ export default function Maincanvas() {
   }, []);
 
   useEffect(() => {
-    if (!canvasBall) return;
+    if (!threeCube) return;
     let isUnmountedSec = false;
     (async () => {
-      await canvasBall[`${state}Action`]?.();
+      await threeCube[`${state}Action`]?.();
       dispatch(nextStep());
       if (isUnmountedSec) return;
     })();
@@ -47,7 +49,7 @@ export default function Maincanvas() {
     return () => {
       isUnmountedSec = true;
     };
-  }, [state, canvasBall]);
+  }, [state, threeCube]);
 
-  return <div className="soccer-ball" ref={container}></div>;
+  return <div className="three-cube" ref={container}></div>;
 }
