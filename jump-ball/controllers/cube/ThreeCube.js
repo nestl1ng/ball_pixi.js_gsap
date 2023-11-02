@@ -19,9 +19,10 @@ export default class ThreeCube {
     this.boxHeight = 1;
     this.boxDepth = 1;
 
-    this.maxRad = 2;
-    this.step = this.getRandomNum(this.maxRad);
-    this.randNumb = Math.round(this.getRandomNum(2));
+    this.step = this.getRandomNum(0, 2);
+    this.stepCounter = 0;
+    this.randNumb = Math.round(this.getRandomNum(0, 5));
+    this.smooth = 0.01;
 
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
@@ -74,55 +75,73 @@ export default class ThreeCube {
     });
 
     window.addEventListener("resize", () => {
-        this.onWindowResize();
-      });
+      this.onWindowResize();
+    });
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.render(this.scene, this.camera);
-}
+  }
 
   onMouseMove(event) {
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
-  cubeTarget(){
+  cubeTarget() {
     this.raycaster.setFromCamera(this.mouse, this.camera);
     this.isIntersected = this.raycaster.intersectObject(this.cubeFigure);
     if (this.isIntersected.length > 0) {
-        this.lineupCube()
+      this.lineupCube();
     }
   }
 
   lineupCube() {
     this.renderer.render(this.scene, this.camera);
-    if (
-      this.cubeFigure.rotation.x +
-        this.cubeFigure.rotation.y +
-        this.cubeFigure.rotation.z <=
-      this.step
-    ) {
-      if (this.randNumb === 0) {
-        this.cubeFigure.rotation.x += 0.01;
-      } else if (this.randNumb === 1) {
-        this.cubeFigure.rotation.y += 0.01;
-      } else if (this.randNumb === 2) {
-        this.cubeFigure.rotation.z += 0.01;
-      }
-      this.renderer.render(this.scene, this.camera);
+    if (this.step > this.stepCounter) {
+      this.getRandomRotation(this.randNumb);
       window.requestAnimationFrame(this.lineupCube.bind(this));
+      this.stepCounter += this.smooth;
     } else {
-      this.step += this.getRandomNum(this.maxRad);
-      this.randNumb = Math.round(this.getRandomNum(2));
+      this.randNumb = Math.round(this.getRandomNum(0, 5));
+      this.stepCounter = 0;
+      this.step = this.getRandomNum(0, 2);
     }
   }
 
-  getRandomNum(max) {
-    let rand = Math.random() * max;
+  getRandomRotation(numb) {
+    switch (numb) {
+      case 0:
+        this.cubeFigure.rotation.x += this.smooth;
+        break;
+      case 1:
+        this.cubeFigure.rotation.y += this.smooth;
+        break;
+      case 2:
+        this.cubeFigure.rotation.z += this.smooth;
+        break;
+      case 3:
+        this.cubeFigure.rotation.x -= this.smooth;
+        break;
+      case 4:
+        this.cubeFigure.rotation.y -= this.smooth;
+        break;
+      case 5:
+        this.cubeFigure.rotation.z -= this.smooth;
+        break;
+    }
+  }
+
+  getRandomNum(min, max) {
+    let rand;
+    if (max) {
+      rand = Math.random() * (max - min) + min;
+    } else {
+      rand = Math.random() * min;
+    }
     return +rand.toFixed(2);
   }
 }
