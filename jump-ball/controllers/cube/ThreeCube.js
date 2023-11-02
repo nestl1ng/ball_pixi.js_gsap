@@ -24,14 +24,12 @@ export default class ThreeCube {
     this.randNumb = Math.round(this.getRandomNum(0, 5));
     this.smooth = 0.01;
 
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
     this.isIntersected;
   }
 
-  loadingManifestAction() {}
+  // loadingManifestAction() {}
 
-  async loadingAssetsAction() {}
+  // async loadingAssetsAction() {}
 
   webGLRenderer() {
     return (this.renderer = new THREE.WebGLRenderer({ antialias: true }));
@@ -52,6 +50,9 @@ export default class ThreeCube {
     this.material = new THREE.MeshLambertMaterial({ color: "red" });
     this.cubeFigure = new THREE.Mesh(this.geometry, this.material);
     this.scene = new THREE.Scene();
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.light = new THREE.DirectionalLight(0xffffff, 3);
   }
 
   initLevelAction() {
@@ -59,7 +60,6 @@ export default class ThreeCube {
     this.camera.position.z = 2;
     this.scene.add(this.cubeFigure);
 
-    this.light = new THREE.DirectionalLight(0xffffff, 3);
     this.light.position.set(-1, 2, 4);
     this.scene.add(this.light);
     this.renderer.render(this.scene, this.camera);
@@ -79,16 +79,16 @@ export default class ThreeCube {
     });
   }
 
+  onMouseMove(event) {
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  }
+
   onWindowResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.render(this.scene, this.camera);
-  }
-
-  onMouseMove(event) {
-    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
   cubeTarget() {
