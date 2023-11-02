@@ -18,6 +18,14 @@ export default class ThreeCube {
     this.boxWidth = 1;
     this.boxHeight = 1;
     this.boxDepth = 1;
+    this.cubeTarget = this.cubeTarget.bind(this);
+    this.onWindowResize = this.onWindowResize.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.uniforms = {
+      colorB: { type: "vec3", value: new THREE.Color(0xfc0303) },
+      colorA: { type: "vec3", value: new THREE.Color(0xfcc603) },
+      time: { value: 0 },
+    };
 
     this.step = this.getRandomNum(0, 2);
     this.stepCounter = 0;
@@ -26,10 +34,6 @@ export default class ThreeCube {
 
     this.isIntersected;
   }
-
-  // loadingManifestAction() {}
-
-  // async loadingAssetsAction() {}
 
   webGLRenderer() {
     return (this.renderer = new THREE.WebGLRenderer({ antialias: true }));
@@ -47,17 +51,22 @@ export default class ThreeCube {
       this.boxHeight,
       this.boxDepth
     );
-    this.material = new THREE.MeshLambertMaterial({ color: "red" });
+    this.material = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      fragmentShader: this.fragmentShader(),
+      vertexShader: this.vertexShader(),
+    });
     this.cubeFigure = new THREE.Mesh(this.geometry, this.material);
     this.scene = new THREE.Scene();
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     this.light = new THREE.DirectionalLight(0xffffff, 3);
+    this.scene.fog = new THREE.Fog(0xcccccc, 2, 5);
   }
 
   initLevelAction() {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.camera.position.z = 2;
+    this.camera.position.z = 3;
     this.scene.add(this.cubeFigure);
 
     this.light.position.set(-1, 2, 4);
@@ -66,17 +75,9 @@ export default class ThreeCube {
   }
 
   playingAction() {
-    window.addEventListener("mousemove", (event) => {
-      this.onMouseMove(event);
-    });
-
-    window.addEventListener("click", () => {
-      this.cubeTarget();
-    });
-
-    window.addEventListener("resize", () => {
-      this.onWindowResize();
-    });
+    window.addEventListener("mousemove", this.onMouseMove);
+    window.addEventListener("click", this.cubeTarget);
+    window.addEventListener("resize", this.onWindowResize);
   }
 
   onMouseMove(event) {
@@ -113,26 +114,9 @@ export default class ThreeCube {
   }
 
   getRandomRotation(numb) {
-    switch (numb) {
-      case 0:
-        this.cubeFigure.rotation.x += this.smooth;
-        break;
-      case 1:
-        this.cubeFigure.rotation.y += this.smooth;
-        break;
-      case 2:
-        this.cubeFigure.rotation.z += this.smooth;
-        break;
-      case 3:
-        this.cubeFigure.rotation.x -= this.smooth;
-        break;
-      case 4:
-        this.cubeFigure.rotation.y -= this.smooth;
-        break;
-      case 5:
-        this.cubeFigure.rotation.z -= this.smooth;
-        break;
-    }
+    const a = ["x", "y", "z"];
+    this.cubeFigure.rotation[a[numb % a.length]] +=
+      (Number(numb > 2) * 2 - 1) * this.smooth;
   }
 
   getRandomNum(min, max) {
@@ -143,5 +127,31 @@ export default class ThreeCube {
       rand = Math.random() * min;
     }
     return +rand.toFixed(2);
+  }
+
+  vertexShader() {
+    return `
+      varying vec3 vUv; 
+      uniform float time;
+  
+      void main() {
+        vUv = position; 
+  
+        vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelViewPosition; 
+      }
+    `;
+  }
+
+  fragmentShader() {
+    return `
+    uniform vec3 colorA; 
+    uniform vec3 colorB; 
+    varying vec3 vUv;
+
+    void main() {
+      gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+    }
+`;
   }
 }
