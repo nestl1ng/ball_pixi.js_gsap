@@ -38,8 +38,8 @@ export default function Maincanvas() {
     let isUnmountedSec = false;
     (async () => {
       await canvasBall[`${state}Action`]?.();
-      dispatch(nextStep());
       if (isUnmountedSec) return;
+      dispatch(nextStep());
     })();
 
     stateObj[state]?.();

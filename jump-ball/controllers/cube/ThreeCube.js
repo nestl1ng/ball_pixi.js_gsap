@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { gsap } from "gsap/dist/gsap";
 
 export default class ThreeCube {
   static get instance() {
@@ -21,10 +22,11 @@ export default class ThreeCube {
     this.cubeTarget = this.cubeTarget.bind(this);
     this.onWindowResize = this.onWindowResize.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+
     this.uniforms = {
-      colorB: { type: "vec3", value: new THREE.Color(0xfc0303) },
       colorA: { type: "vec3", value: new THREE.Color(0xfcc603) },
-      time: { value: 0 },
+      colorB: { type: "vec3", value: new THREE.Color(0xfc0303) },
+      time: { value: 1 },
     };
 
     this.step = this.getRandomNum(0, 2);
@@ -33,6 +35,7 @@ export default class ThreeCube {
     this.smooth = 0.01;
 
     this.isIntersected;
+    this.tl = gsap.timeline();
   }
 
   webGLRenderer() {
@@ -61,7 +64,8 @@ export default class ThreeCube {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     this.light = new THREE.DirectionalLight(0xffffff, 3);
-    this.scene.fog = new THREE.Fog(0xcccccc, 2, 5);
+    this.scene.fog = new THREE.Fog(0xcccccc, this.near, this.far);
+    this.scene.background = new THREE.Color(0xcccccc);
   }
 
   initLevelAction() {
@@ -78,6 +82,8 @@ export default class ThreeCube {
     window.addEventListener("mousemove", this.onMouseMove);
     window.addEventListener("click", this.cubeTarget);
     window.addEventListener("resize", this.onWindowResize);
+    this.renderScene();
+    this.runTime();
   }
 
   onMouseMove(event) {
@@ -101,22 +107,17 @@ export default class ThreeCube {
   }
 
   lineupCube() {
-    this.renderer.render(this.scene, this.camera);
-    if (this.step > this.stepCounter) {
-      this.getRandomRotation(this.randNumb);
-      window.requestAnimationFrame(this.lineupCube.bind(this));
-      this.stepCounter += this.smooth;
-    } else {
-      this.randNumb = Math.round(this.getRandomNum(0, 5));
-      this.stepCounter = 0;
-      this.step = this.getRandomNum(0, 2);
-    }
+    gsap.to(this.cubeFigure.rotation, {
+      [this.getRandomRotation()]: `+=${this.getRandomNum(-2, 2)}`,
+      duration: 2,
+      ease: "power1.out",
+    });
   }
 
-  getRandomRotation(numb) {
+  getRandomRotation() {
+    const numb = Math.round(this.getRandomNum(0, 2));
     const a = ["x", "y", "z"];
-    this.cubeFigure.rotation[a[numb % a.length]] +=
-      (Number(numb > 2) * 2 - 1) * this.smooth;
+    return a[numb];
   }
 
   getRandomNum(min, max) {
@@ -129,28 +130,44 @@ export default class ThreeCube {
     return +rand.toFixed(2);
   }
 
+  runTime() {
+    gsap.to(this.cubeFigure.material.uniforms.time, {
+      value: "+=10",
+      duration: 3,
+      ease: "none",
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+
+  renderScene() {
+    this.renderer.render(this.scene, this.camera);
+    window.requestAnimationFrame(this.renderScene.bind(this));
+  }
+
   vertexShader() {
     return `
       varying vec3 vUv; 
-      uniform float time;
-  
+      varying vec3 vposition;
+
       void main() {
         vUv = position; 
-  
-        vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-        gl_Position = projectionMatrix * modelViewPosition; 
+        vposition = (modelMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `;
   }
 
   fragmentShader() {
     return `
-    uniform vec3 colorA; 
-    uniform vec3 colorB; 
     varying vec3 vUv;
+    varying vec3 vposition;
+    uniform float time;
 
     void main() {
-      gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+      vec4 color = vec4( vposition.y, vposition.y, 1.0, 1.0 );
+			color.y += sin( vposition.y * 10.0 + time );
+      gl_FragColor = color;
     }
 `;
   }
